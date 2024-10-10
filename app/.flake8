@@ -1,6 +1,6 @@
 # default linting configuration files
 [flake8]
-exclude = 
+exclude =
     migrations,
     __pycache__,
     manage.py,
