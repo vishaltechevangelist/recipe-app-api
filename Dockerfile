@@ -1,0 +1,32 @@
+# name of the package and tag 3.9-alpine3.13
+FROM python:3.9-alpine3.13  
+LABEL maintainer="vishaltechevangelist"
+
+# DONT buffer the python output hence the output prinyted withput any delay
+ENV PYTHONUNBUFFERED 1
+
+# COPY project requirement and app from local machine 
+COPY ./requirements.txt /tmp/requirements.txt
+COPY ./requirements.dev.txt /tmp/requirements.dev.txt
+COPY ./app /app
+WORKDIR  /app
+EXPOSE 8000
+
+
+# create virtual env that we are going to use to store our dependencies
+ARG DEV=false
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+    /py/bin/pip install -r /tmp/requirements.txt && \
+    if [$DEV = "true"]; \
+        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
+    fi && \
+    rm -rf /tmp/ && \
+    adduser \
+        --disabled-password \
+        --no-create-home \
+        django-user
+
+ENV PATH = "/py/bin:$PATH"
+
+USER django-user
